@@ -1,0 +1,62 @@
+<!-- Sticky navbar -->
+{% load static %}
+
+  <nav class="navbar navbar-expand-md sticky-top">
+    <div class="container-fluid justify-content-between">
+      <!-- left elements -->
+      <a class="navbar-brand" href="{% url 'index' %}">
+        <img class="logo-header" src="{% static 'img/logos empresa/logo-auto-negro.svg' %}" width="30" height="30"
+             alt="logo empresa" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link
+                {% if request.get_full_path == "/" %}
+                    pagina-activa
+                {% endif %}"
+               href="{% url 'index' %}">Pagina Principal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link 
+                    {% if request.get_full_path == "/trabajos" %}
+                    pagina-activa
+                    {% endif %}" 
+               href="{% url 'trabajos' %}">Nuestros Trabajos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link 
+                    {% if request.get_full_path == "/productos" %}
+                    pagina-activa
+                    {% endif %}" 
+               href="{% url 'productos' %}">Productos</a>
+          </li>
+          <li class="nav-item">
+            <a
+                class="nav-link
+                {% if request.get_full_path == "/nosotros" %}
+                    pagina-activa
+                {% endif %}"
+                href="{% url 'nosotros' %}">Nosotros</a>
+          </li>
+        </ul>
+      </div>
+      <!-- right elements -->
+      <div class="d-flex ms-auto r-elements">
+        <!-- usuario -->
+        <a class="nav-link mx-2" href="{% url 'login' %}">
+          <img src="{% static 'img/logo-usuario.svg' %}" alt="">
+        </a>
+        <!-- carrito compra -->
+        <a class="nav-link mx-2" href="#" data-bs-toggle="popover" data-bs-title="Carrito"
+          data-bs-content="Por implementar! Aca iria la informacion del carrito y un boton para confirmar compra">
+          <img src="{% static 'img/logo-shopping-cart.svg' %}" alt="">
+          <div id="contadorCarrito">1</div>
+        </a>
+      </div>
+    </div>
+  </nav>
