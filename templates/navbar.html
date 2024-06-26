@@ -47,6 +47,8 @@
       </div>
       <!-- right elements -->
       <div class="d-flex ms-auto r-elements">
+
+          <p>{{ request.user }}</p>
         <!-- usuario -->
         <a class="nav-link mx-2" href="{% url 'login' %}">
           <img src="{% static 'img/logo-usuario.svg' %}" alt="">
