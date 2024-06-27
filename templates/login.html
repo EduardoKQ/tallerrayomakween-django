@@ -87,10 +87,16 @@
             <form class="form-validation" method="POST" action="">
                 {% csrf_token %}
 
-              <!-- correo -->
+                <!-- nombre -->
               <div class="form-group">
-                <label for="username">Correo</label>
-                {{ register_form.username }}
+                <label for="username">Nombre</label>
+                {{ register_form.first_name }}
+                <div class="invalid-feedback">Ingrese un nombre valido</div>
+              </div>
+                <!-- correo -->
+              <div class="form-group">
+                <label for="email">Correo</label>
+                {{ register_form.email }}
                 <div class="invalid-feedback">Ingrese un correo valido</div>
               </div>
               <!-- contraseña -->

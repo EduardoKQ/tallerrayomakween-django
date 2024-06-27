@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Taller Rayo Makween</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+      <link rel="stylesheet" href="{% static 'bootstrap-5.3.3/css/bootstrap.css' %}">
+      <link rel="stylesheet" href="{% static 'css/navbar-admin.css' %}">
+      <link rel="stylesheet" href="{% static 'css/admin-taller.css' %}">
+  </head>
+
+  <body>
+  {# insertamos el navbar #}
+  {% include "navbar-admin.html" %}
+
+    <main>
+        <!-- datos Mecanicos -->
+        <div class="container">
+            <h1>Mecanico del Taller</h1>
+            <a href="{% url "admin-taller-crearcuenta" %}">
+            <button class="btn btn-primary">
+                Crear Cuenta de Mecanico
+            </button>
+            </a>
+
+            <table>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Especialidad</th>
+                    <th>Total trabajos</th>
+                    <th>Trabajos Publicados</th>
+                    <th>Trabajos por Revisar</th>
+                    <th>Modificar</th>
+                    <th>Eliminar</th>
+                </tr>
+
+                {% for mecanico in mecanicos %}
+                <tr>
+
+                	<td>{{ mecanico.nombre }}</td>
+                    <td>{{ mecanico.user.username }}</td>
+                    <td>{{ mecanico.especialidad.nombre_especialidad }}</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>
+                        <a href="{% url "admin-taller-actualizarcuenta" mecanico.rut  %}">
+                            <button type="button" class="btn btn-primary">Modificar</button>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url "admin-taller-borrarcuenta" mecanico.rut  %}">
+                            <button type="button" class="btn btn-danger">Eliminar</button>
+
+                        </a>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+
+            </table>
+
+
+        </div>
+        <!-- datos Trabajos pendientes -->
+        <br>
+        <div class="container">
+            <h1>Trabajos</h1>
+            <div class="row">
+                <h2>Trabajos Pendientes de Revision</h2>
+
+            </div>
+            <div class="row">
+                <h2>Todos los trabajos</h2>
+
+            </div>
+
+        </div>
+
+
+
+    </main>
+
+    <!-- los script los cargamos al final -->
+    <script src="{% static "bootstrap-5.3.3/js/bootstrap.bundle.min.js" %}"></script>
+    <script src="{% static "jquery-3.2.1/jquery-3.2.1.min.js" %}"></script>
+  </body>
+</html>

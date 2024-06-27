@@ -48,11 +48,33 @@
       <!-- right elements -->
       <div class="d-flex ms-auto r-elements">
 
-          <p>{{ request.user }}</p>
         <!-- usuario -->
-        <a class="nav-link mx-2" href="{% url 'login' %}">
-          <img src="{% static 'img/logo-usuario.svg' %}" alt="">
-        </a>
+          {% if user.groups.all.0.name == "superuser"%}
+                <a class="nav-link mx-2" href="{% url 'admin:index' %}">
+                    <p>Bienvenido Superusuario!</p>
+                    <img src="{% static 'img/logo-superuser.svg' %}" alt="">
+                </a>
+          {% elif user.groups.all.0.name == "administrador_taller"%}
+                <a class="nav-link mx-2" href="{% url 'admin-taller' %}">
+                    <p>Hola {{request.user}} (admin taller) !</p>
+                    <img src="{% static 'img/logo-admin-taller.svg' %}" alt="">
+                </a>
+          {% elif user.groups.all.0.name == "cliente"%}
+                <a class="nav-link mx-2" href="{% url 'login' %}">
+                    <p>Hola {{request.user}} (cliente) !</p>
+                    <img src="{% static 'img/logo-usuario.svg' %}" alt="">
+                </a>
+          {% elif user.groups.all.0.name == "mecanico"%}
+                <a class="nav-link mx-2" href="{% url 'admin-mecanico' %}">
+                    <p>Hola {{request.user}} (mecanico)!</p>
+                    <img src="{% static 'img/logo-mecanico.svg' %}" alt="">
+                </a>
+          {% else %}
+              <a class="nav-link mx-2" href="{% url 'login' %}">
+                    <p>Iniciar Sesion</p>
+                    <img src="{% static 'img/logo-usuario.svg' %}" alt="">
+              </a>
+          {% endif %}
         <!-- carrito compra -->
         <a class="nav-link mx-2" href="#" data-bs-toggle="popover" data-bs-title="Carrito"
           data-bs-content="Por implementar! Aca iria la informacion del carrito y un boton para confirmar compra">
