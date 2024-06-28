@@ -14,7 +14,7 @@ from .models import Mecanico, Trabajo
 
 # Create your views here.
 def index(request):
-    ultimos_trabajos = Trabajo.objects.filter(revision="Aprobado").order_by('-fecha_creacion')[:3]
+    ultimos_trabajos = Trabajo.objects.filter(revision="Aprobado").order_by('fecha_creacion')[:3]
     ultimo_trabajo = ultimos_trabajos[0]
     sig_trabajos = ultimos_trabajos[1:]
     context = {"ultimo_trabajo": ultimo_trabajo,
@@ -189,8 +189,8 @@ def admin_taller_borrarcuenta(request, pk):
 
     if request.method == "POST":
         print(mecanico)
-        #user.delete()
-        #mecanico.delete()
+        user.delete()
+        mecanico.delete()
         return redirect("/admin_taller")
 
     return render(request, "admin-taller-borrarcuenta.html", context)
@@ -289,9 +289,7 @@ def admin_mecanico_eliminartrabajo(request, pk):
     context = {"trabajo": trabajo}
 
     if request.method == "POST":
-        print(trabajo)
-        # user.delete()
-        # mecanico.delete()
+        trabajo.delete()
         return redirect("/admin_mecanico")
 
     return render(request, "admin-mecanico-eliminartrabajo.html", context)

@@ -60,7 +60,7 @@
                     <img src="{% static 'img/logo-admin-taller.svg' %}" alt="">
                 </a>
           {% elif user.groups.all.0.name == "cliente"%}
-                <a class="nav-link mx-2" href="{% url 'login' %}">
+                <a class="nav-link mx-2" href="{% url 'user_logout' %}">
                     <p>Hola {{request.user}} (cliente) !</p>
                     <img src="{% static 'img/logo-usuario.svg' %}" alt="">
                 </a>
