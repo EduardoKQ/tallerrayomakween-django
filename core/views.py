@@ -11,7 +11,6 @@ from .forms import RegisterClienteForm, MecanicoForm, UserForm, TrabajoForm, Rev
 from .decorators import unauthenticated_user, allowed_users
 from .models import Mecanico, Trabajo
 
-
 # Create your views here.
 def index(request):
     ultimos_trabajos = Trabajo.objects.filter(revision="Aprobado").order_by('fecha_creacion')[:3]
@@ -224,7 +223,8 @@ def admin_taller_trabajos(request):
 #####################################################################
 @allowed_users(allowed_roles=['mecanico'])
 def admin_mecanico(request):
-    trabajos = Trabajo.objects.all()
+    mecanico_actual = Mecanico.objects.filter(user=request.user).first()
+    trabajos = Trabajo.objects.filter(mecanico = mecanico_actual)
     context = {"trabajos":trabajos}
     return render(request, "admin-mecanico.html", context)
 
