@@ -7,7 +7,7 @@
     {% load static %}
       <link rel="stylesheet" href="{% static 'bootstrap-5.3.3/css/bootstrap.css' %}">
       <link rel="stylesheet" href="{% static 'css/navbar-admin.css' %}">
-      <link rel="stylesheet" href="{% static 'css/admin-taller.css' %}">
+      <link rel="stylesheet" href="{% static 'css/admin-mecanico.css' %}">
   </head>
 
   <body>
@@ -15,29 +15,19 @@
   {% include "navbar-admin.html" %}
 
     <main>
-
-        <!-- crear Mecanicos -->
+        <!-- crear Trabajo -->
         <div class="container">
-            <form method="POST">
+            <h1>Nuevo Trabajo</h1>
+
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
-                    <h2>Datos Cuenta Web</h2>
-                    {{ user_form.as_table }}
+                    {{ trabajo_form.as_table }}
                 </div>
 
-                <div class="row">
-                    <h2>Datos del Usuario</h2>
-                    {{ mecanico_form.as_table }}
-                </div>
-
-            <input type="submit" name="crear-mecanico">
+            <input type="submit" name="crear-trabajo">
         </form>
         </div>
-
-        <!-- datos Trabajos pendientes -->
-
-
-
     </main>
 
     <!-- los script los cargamos al final -->

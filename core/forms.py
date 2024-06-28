@@ -3,7 +3,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Mecanico
+from .models import Mecanico, Trabajo
+
 
 class RegisterClienteForm(UserCreationForm):
     class Meta:
@@ -25,5 +26,30 @@ class MecanicoForm(forms.ModelForm):
             "fecha_nacimiento",
             "direccion",
             "especialidad"
+        ]
+
+class TrabajoForm(forms.ModelForm):
+    class Meta:
+        model = Trabajo
+        fields = [
+            "foto_principal",
+            "titulo",
+            "fecha_trabajo",
+            "auto",
+            "diagnostico",
+            "descripcion",
+        ]
+
+class RevisionForm(forms.ModelForm):
+    ESTADO_REVISION = (
+        ("Aprobado", "Aprobado"),
+        ("Rechazado", "Rechazado")
+    )
+    revision = forms.ChoiceField(choices=ESTADO_REVISION)
+
+    class Meta:
+        model = Trabajo
+        fields = [
+            "observaciones",
         ]
 

@@ -18,63 +18,117 @@
 
         <div class="container">
             <h1>Mecanico del Taller</h1>
-            <a href="{% url "admin-taller-crearcuenta" %}">
+            <a href="{% url "admin-mecanico-nuevotrabajo" %}">
             <button class="btn btn-primary">
                 Crear Nuevo Trabajo
             </button>
             </a>
 
-            <table>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Especialidad</th>
-                    <th>Total trabajos</th>
-                    <th>Trabajos Publicados</th>
-                    <th>Trabajos por Revisar</th>
-                    <th>Modificar</th>
-                    <th>Eliminar</th>
-                </tr>
-
-                {% for mecanico in mecanicos %}
-                <tr>
-
-                	<td>{{ mecanico.nombre }}</td>
-                    <td>{{ mecanico.user.username }}</td>
-                    <td>{{ mecanico.especialidad.nombre_especialidad }}</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>
-                        <a href="{% url "admin-taller-actualizarcuenta" mecanico.rut  %}">
-                            <button type="button" class="btn btn-primary">Modificar</button>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url "admin-taller-borrarcuenta" mecanico.rut  %}">
-                            <button type="button" class="btn btn-danger">Eliminar</button>
-
-                        </a>
-                    </td>
-                </tr>
-
-                {% endfor %}
-
-
-            </table>
 
 
         </div>
-        <!-- datos Trabajos -->
         <br>
         <div class="container">
-            <h1>Trabajos</h1>
+
             <div class="row">
                 <h2>Trabajos Pendientes de Revision</h2>
+                <table class="tabla-pulenta">
+                <tr>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Titulo</th>
+                    <th>Auto</th>
+                    <th>Diagnostico</th>
+                    <th>Accion</th>
+                </tr>
 
+                {% for trabajo in trabajos %}
+                    {% if trabajo.revision == "Por revisar" %}
+                    	<tr>
+                            <td>Pendiente</td>
+                            <td>{{ trabajo.fecha_trabajo }}</td>
+                            <td>{{ trabajo.titulo }}</td>
+                            <td>{{ trabajo.auto }}</td>
+                            <td>{{ trabajo.diagnostico }}</td>
+                        <td>
+                            <a href="{% url "admin-mecanico-vertrabajo" trabajo.id %}">
+                                <button class="btn btn-warning">Ver</button>
+                            </a>
+                            <a href="{% url "admin-mecanico-modtrabajo" trabajo.id %}">
+                                <button class="btn btn-warning">Modificar</button>
+                            </a>
+                        </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
             </div>
+
             <div class="row">
-                <h2>Todos los trabajos</h2>
+                <h2>Trabajos Rechazados</h2>
+                <table class="tabla-pulenta">
+                <tr>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Titulo</th>
+                    <th>Auto</th>
+                    <th>Diagnostico</th>
+                    <th>Accion</th>
+                </tr>
+
+                {% for trabajo in trabajos %}
+                    {% if trabajo.revision == "Rechazado" %}
+                    	<tr>
+                            <td>Rechazado</td>
+                            <td>{{ trabajo.fecha_trabajo }}</td>
+                            <td>{{ trabajo.titulo }}</td>
+                            <td>{{ trabajo.auto }}</td>
+                            <td>{{ trabajo.diagnostico }}</td>
+                            <td>
+                                <a href="{% url "admin-mecanico-arreglartrabajo" trabajo.id %}">
+                                    <button class="btn btn-warning">Arreglar</button>
+                                </a>
+                                <a href="{% url "admin-mecanico-eliminartrabajo" trabajo.id %}">
+                                    <button class="btn btn-danger">Eliminar</button>
+                                </a>
+                            </td>
+
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+            </div>
+
+
+            <div class="row">
+                <h2>Trabajos Aprobados</h2>
+                <table class="tabla-pulenta">
+                <tr>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Titulo</th>
+                    <th>Auto</th>
+                    <th>Diagnostico</th>
+                    <th>Accion</th>
+                </tr>
+
+                {% for trabajo in trabajos %}
+                    {% if trabajo.revision == "Aprobado" %}
+                    	<tr>
+                            <td>Aprobado!</td>
+                            <td>{{ trabajo.fecha_trabajo }}</td>
+                            <td>{{ trabajo.titulo }}</td>
+                            <td>{{ trabajo.auto }}</td>
+                            <td>{{ trabajo.diagnostico }}</td>
+                            <td>
+                                <a href="{% url "admin-mecanico-vertrabajo" trabajo.id %}">
+                                    <button class="btn btn-warning">Ver</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
 
             </div>
 

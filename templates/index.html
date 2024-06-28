@@ -78,39 +78,31 @@
                   aria-label="Slide 3"></button>
               </div>
               <div class="carousel-inner rounded-2">
-                <div class="carousel-item active">
-                  <a href="">
-                    <img src="{% static "img/img-trabajos/imagen1.webp" %}" class="d-block w-100" alt="..." />
-                    <!-- <img src="https://placehold.co/600x400" class="d-block w-100" alt="..."> -->
+                  	<div class="carousel-item active">
+                    <a href="{% url "ver-trabajo" ultimo_trabajo.id %}">
+                    <img src="{{ ultimo_trabajo.foto_principal.url }}" class="d-block w-100" alt="..." />
                   </a>
                   <div class="carousel-caption">
                     <div class="job-title">
-                      <h5>Cambio de bateria</h5>
+                      <h5>{{ ultimo_trabajo.titulo }}</h5>
                     </div>
                   </div>
                 </div>
 
-                <div class="carousel-item">
-                  <a href="trabajo-2.html">
-                    <img src="{% static "img/img-trabajos/imagen2.webp" %}" class="d-block w-100" alt="..." />
+                  {% for trabajo in sig_trabajos %}
+                  	<div class="carousel-item">
+                    <a href="{% url "ver-trabajo" trabajo.id %}">
+                    <img src="{{ trabajo.foto_principal.url }}" class="d-block w-100" alt="..." />
                   </a>
                   <div class="carousel-caption">
                     <div class="job-title">
-                      <h5>Trabajo 2</h5>
+                      <h5>{{ trabajo.titulo }}</h5>
                     </div>
                   </div>
                 </div>
+                  {% endfor %}
 
-                <div class="carousel-item">
-                  <a href="trabajo-3.html">
-                    <img src="{% static "img/img-trabajos/imagen3.webp" %}" class="d-block w-100" alt="..." />
-                  </a>
-                  <div class="carousel-caption d-flex justify-content-center">
-                    <div class="job-title">
-                      <h5>Trabajo 3</h5>
-                    </div>
-                  </div>
-                </div>
+
               </div>
               <button class="carousel-control-prev" type="button" data-bs-target="#carouselLandingPage"
                 data-bs-slide="prev">
@@ -381,7 +373,6 @@
   <!-- boton para subir al principio pagina -->
   <script src="{% static "scripts/scrollBtn.js" %}"></script>
   <!-- nav collapse al apretar en la pagina -->
-  <script src="{% static "scripts/navCollapse.js" %}"></script>
   <!-- validacion del formulario -->
   <script src="{% static "scripts/validacionFormDudas.js" %}"></script>
 

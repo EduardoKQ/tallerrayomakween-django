@@ -65,16 +65,124 @@
 
 
         </div>
-        <!-- datos Trabajos pendientes -->
+
         <br>
+        <!-- Trabajos pendientes -->
         <div class="container">
             <h1>Trabajos</h1>
             <div class="row">
                 <h2>Trabajos Pendientes de Revision</h2>
+                <table>
+                <tr>
+                    <th>estado</th>
+                    <th>mecanico</th>
+                    <th>Fecha</th>
+                    <th>auto</th>
+                    <th>diagnostico</th>
+                </tr>
 
+                {% for trabajo in trabajos %}
+                    {% if trabajo.revision == "Por revisar" %}
+                    	<tr>
+                            <th>
+                                <a href="{% url "admin-taller-revisartrabajo" trabajo.id%}">
+                                    <button class="btn btn-warning">
+                                    {{ trabajo.revision }}
+                                    </button>
+                                </a>
+
+                            </th>
+                            <th>{{ trabajo.mecanico }}</th>
+
+                            <th>{{ trabajo.fecha_trabajo }}</th>
+                            <th>{{ trabajo.auto }}</th>
+                            <th>{{ trabajo.diagnostico }}</th>
+                        </tr>
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+            </table>
             </div>
             <div class="row">
-                <h2>Todos los trabajos</h2>
+                <h2>Trabajos Aprobados (activos en la web)</h2>
+                <table>
+                <tr>
+                    <th>Estado</th>
+                    <th>Mecanico</th>
+                    <th>Fecha</th>
+                    <th>Auto</th>
+                    <th>Diagnostico</th>
+                    <th>Accion</th>
+                </tr>
+
+                {% for trabajo in trabajos %}
+                    {% if trabajo.revision == "Aprobado" %}
+                    	<tr>
+                            <td>
+                                    {{ trabajo.revision }}
+                            </td>
+                            <td>{{ trabajo.mecanico }}</td>
+
+                            <td>{{ trabajo.fecha_trabajo }}</td>
+                            <td>{{ trabajo.auto }}</td>
+                            <td>{{ trabajo.diagnostico }}</td>
+                            <td>
+                                <a href="{% url "admin-taller-revisartrabajo" trabajo.id %}">
+                                    <button class="btn btn-warning">Modificar</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+
+
+                {% endfor %}
+
+
+            </table>
+            </div>
+
+        <div class="row">
+                <h2>Trabajos Rechazados</h2>
+                <table>
+                <tr>
+                    <th>Estado</th>
+                    <th>Mecanico</th>
+                    <th>Fecha</th>
+                    <th>Auto</th>
+                    <th>Diagnostico</th>
+                    <th>Accion</th>
+                </tr>
+
+                {% for trabajo in trabajos %}
+                    {% if trabajo.revision == "Rechazado" %}
+                    	<tr>
+                            <td>
+                                    {{ trabajo.revision }}
+                            </td>
+                            <td>{{ trabajo.mecanico }}</td>
+
+                            <td>{{ trabajo.fecha_trabajo }}</td>
+                            <td>{{ trabajo.auto }}</td>
+                            <td>{{ trabajo.diagnostico }}</td>
+                            <td>
+                                <a href="{% url "admin-taller-revisartrabajo" trabajo.id %}">
+                                    <button class="btn btn-warning">Modificar</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+
+
+                {% endfor %}
+
+
+            </table>
+            </div>
 
             </div>
 

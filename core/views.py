@@ -7,22 +7,28 @@ from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import Group, User
 
 from . import models
-from .forms import RegisterClienteForm, MecanicoForm, UserForm
+from .forms import RegisterClienteForm, MecanicoForm, UserForm, TrabajoForm, RevisionForm
 from .decorators import unauthenticated_user, allowed_users
-from .models import Mecanico
+from .models import Mecanico, Trabajo
 
 
 # Create your views here.
 def index(request):
+    ultimos_trabajos = Trabajo.objects.filter(revision="Aprobado").order_by('-fecha_creacion')[:3]
+    ultimo_trabajo = ultimos_trabajos[0]
+    sig_trabajos = ultimos_trabajos[1:]
+    context = {"ultimo_trabajo": ultimo_trabajo,
+               "sig_trabajos": sig_trabajos
+               }
     template = loader.get_template('index.html')
-    return HttpResponse(template.render({}, request))
+    return HttpResponse(template.render(context, request))
 
 def nosotros(request):
     template = loader.get_template('nosotros.html')
     return HttpResponse(template.render({}, request))
 
 
-#@unauthenticated_user
+@unauthenticated_user
 def login(request):
     register_form = RegisterClienteForm()
     context = {'register_form': register_form}
@@ -55,7 +61,7 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 messages.success(request, 'Login exitoso!')
-                return redirect("/")
+                return redirect("/auth_error")
             else:
                 messages.info(request, "Correo o Contraseña incorrectos")
 
@@ -66,6 +72,9 @@ def user_logout(request):
     return redirect('/')
 
 def auth_error(request):
+    if not request.user.groups.exists():
+        return redirect("/")
+
     group = request.user.groups.all()[0].name
     print(group)
     if group == "administrador_taller":
@@ -73,7 +82,7 @@ def auth_error(request):
     if group == "cliente":
         return redirect("/")
     if group == "mecanico":
-        return redirect("/admin_trabajos")
+        return redirect("/admin_mecanico")
 
     if group == "superuser":
         return redirect("/admin")
@@ -81,20 +90,43 @@ def auth_error(request):
     return redirect("/")
 
 def nuestros_trabajos(request):
+    trabajos_validos = Trabajo.objects.filter(revision="Aprobado")
+    #procesamos las querys de busqueda
+
+    #busqueda por mecanico
+    if "m" in request.GET:
+        mecanico = Mecanico.objects.filter(nombre=request.GET['m']).first()
+
+        if mecanico:
+            trabajos_validos = trabajos_validos.filter(mecanico = mecanico)
+        else:
+            trabajos_validos = None
+
+    context = {'trabajos': trabajos_validos}
     template = loader.get_template('trabajos.html')
-    return HttpResponse(template.render({}, request))
+    return HttpResponse(template.render(context, request))
+
+
+def ver_trabajo(request, pk):
+    trabajo = Trabajo.objects.get(id=pk)
+    context = {'trabajo': trabajo}
+    return render(request,"ver-trabajo.html",context)
 
 def productos(request):
     template = loader.get_template('productos.html')
     return HttpResponse(template.render({}, request))
 
+#####################################################################
 # Vistas del Administrador del Taller
+#####################################################################
 @allowed_users(allowed_roles=['administrador_taller'])
 def admin_taller(request):
     context={
         "mecanicos" : Mecanico.objects.all(),
+        "trabajos" : Trabajo.objects.all(),
     }
     return render(request,"admin-taller.html",context)
+
 @allowed_users(allowed_roles=['administrador_taller'])
 def admin_taller_crearcuenta(request):
     mecanico_form = MecanicoForm()
@@ -125,7 +157,7 @@ def admin_taller_crearcuenta(request):
                                                especialidad=mecanico_form.cleaned_data['especialidad']
                                                )
             mecanico.save()
-            return redirect("/admin-taller")
+            return redirect("/admin_taller")
 
     context = {"user_form": user_form,
                'mecanico_form': mecanico_form}
@@ -142,7 +174,7 @@ def admin_taller_actualizarcuenta(request, pk):
         mecanico_form = MecanicoForm(request.POST, instance=mecanico)
         if mecanico_form.is_valid():
             mecanico_form.save()
-            return redirect("/admin-taller")
+            return redirect("/admin_taller")
 
     context = {'mecanico_form': mecanico_form}
     return render(request, "admin-taller-crearcuenta.html", context)
@@ -159,17 +191,123 @@ def admin_taller_borrarcuenta(request, pk):
         print(mecanico)
         #user.delete()
         #mecanico.delete()
-        return redirect("/admin-taller")
+        return redirect("/admin_taller")
 
     return render(request, "admin-taller-borrarcuenta.html", context)
 
 
 @allowed_users(allowed_roles=['administrador_taller'])
-def admin_taller_vertrabajos(request):
-    return None
+def admin_taller_revisartrabajo(request, pk):
+    trabajo = Trabajo.objects.get(id=pk)
+    revision_form = RevisionForm(instance=trabajo)
+    context = {"trabajo" : trabajo,
+               "revision_form": revision_form}
+
+    if request.method == "POST":
+        revision_form = RevisionForm(request.POST)
+        if revision_form.is_valid():
+            trabajo = Trabajo.objects.get(id=pk)
+            trabajo.revision = revision_form.cleaned_data['revision']
+            trabajo.observaciones = revision_form.cleaned_data['observaciones']
+            trabajo.save()
+            return redirect("/admin_taller")
+    return render(request, "admin-taller-revisartrabajo.html", context)
+
+@allowed_users(allowed_roles=['administrador_taller'])
+def admin_taller_trabajos(request):
+    context={
+        "trabajos" : Trabajo.objects.all(),
+    }
+    return render(request,"admin-taller-trabajos.html",context)
+#####################################################################
+# Vistas del Mecanico
+#####################################################################
+@allowed_users(allowed_roles=['mecanico'])
+def admin_mecanico(request):
+    trabajos = Trabajo.objects.all()
+    context = {"trabajos":trabajos}
+    return render(request, "admin-mecanico.html", context)
 
 
 @allowed_users(allowed_roles=['mecanico'])
-def admin_trabajos(request):
-    template = loader.get_template('admin-mecanico.html')
-    return HttpResponse(template.render({}, request))
+def admin_mecanico_trabajos(request):
+    trabajos = Trabajo.objects.all()
+    context = {"trabajos":trabajos}
+    return render(request, "admin-mecanico-trabajos.html", context)
+
+@allowed_users(allowed_roles=['mecanico'])
+def admin_mecanico_nuevotrabajo(request):
+    trabajo_form = TrabajoForm()
+    context = {"trabajo_form": trabajo_form}
+
+    if request.method == "POST":
+        trabajo_form = TrabajoForm(request.POST, request.FILES)
+        print(1)
+        print(trabajo_form.errors.as_data())
+        if trabajo_form.is_valid():
+            print(2)
+            mecanico = Mecanico.objects.get(user=request.user)
+            trabajo = Trabajo.objects.create(
+                mecanico = mecanico,
+                titulo=trabajo_form.cleaned_data['titulo'],
+                foto_principal=trabajo_form.cleaned_data['foto_principal'],
+                fecha_trabajo=trabajo_form.cleaned_data['fecha_trabajo'],
+                auto=trabajo_form.cleaned_data['auto'],
+                diagnostico=trabajo_form.cleaned_data['diagnostico'],
+                descripcion=trabajo_form.cleaned_data['descripcion'],
+                revision="Por revisar",
+            )
+            trabajo.save()
+            print(trabajo)
+            return redirect("/admin_mecanico")
+
+    return render(request, "admin-mecanico-nuevotrabajo.html", context)
+@allowed_users(allowed_roles=['mecanico'])
+def admin_mecanico_vertrabajo(request, pk):
+    trabajo = Trabajo.objects.get(id=pk)
+    context = {"trabajo": trabajo}
+    return render(request, "admin-mecanico-vertrabajo.html", context)
+
+@allowed_users(allowed_roles=['mecanico'])
+def admin_mecanico_modtrabajo(request, pk):
+    trabajo = Trabajo.objects.get(id=pk)
+    trabajo_form = TrabajoForm(instance=trabajo)
+
+    if request.method == "POST":
+        trabajo_form = TrabajoForm(request.POST, request.FILES, instance=trabajo)
+        if trabajo_form.is_valid():
+            trabajo_form.save()
+            return redirect("/admin_mecanico")
+
+    context = {'trabajo_form': trabajo_form}
+    return render(request, "admin-mecanico-nuevotrabajo.html", context)
+
+
+@allowed_users(allowed_roles=['mecanico'])
+def admin_mecanico_eliminartrabajo(request, pk):
+    trabajo = Trabajo.objects.get(id=pk)
+    context = {"trabajo": trabajo}
+
+    if request.method == "POST":
+        print(trabajo)
+        # user.delete()
+        # mecanico.delete()
+        return redirect("/admin_mecanico")
+
+    return render(request, "admin-mecanico-eliminartrabajo.html", context)
+@allowed_users(allowed_roles=['mecanico'])
+def admin_mecanico_arreglartrabajo(request, pk):
+    trabajo = Trabajo.objects.get(id=pk)
+    trabajo_form = TrabajoForm(instance=trabajo)
+    context = {"trabajo_form":trabajo_form,
+               "trabajo":trabajo}
+
+    if request.method == "POST":
+        trabajo_form = TrabajoForm(request.POST, request.FILES, instance=trabajo)
+        if trabajo_form.is_valid():
+            trabajo_form.save()
+            trabajo.revision = "Por revisar"
+            trabajo.save()
+            return redirect("/admin_mecanico")
+
+    return render(request, "admin-mecanico-arreglartrabajo.html", context)
